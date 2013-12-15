@@ -1,6 +1,12 @@
 include ../../extra.mk
 
+ifeq ($(LIBAUDACIOUS),yes)
+SHARED_LIB = ${LIB_PREFIX}audacious${LIB_SUFFIX}
+LIB_MAJOR = 2
+LIB_MINOR = 0
+else
 PROG = audacious${PROG_SUFFIX}
+endif
 
 ifeq ($(USE_GTK),yes)
 SRCS = adder.c \

@@ -543,7 +543,11 @@ static void maybe_quit (void)
 #endif
 }
 
+#ifdef LIBAUDACIOUS
+int audacious_init (int argc, char * * argv)
+#else
 int main (int argc, char * * argv)
+#endif
 {
     init_one ();
     parse_options (& argc, & argv);

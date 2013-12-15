@@ -52,6 +52,9 @@ void history_cleanup (void);
 
 /* main.c */
 bool_t do_autosave (void);
+#ifdef LIBAUDACIOUS
+int audacious_init (int argc, char * * argv);
+#endif
 
 /* signals.c */
 #ifdef HAVE_SIGWAIT

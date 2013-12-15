@@ -135,6 +135,22 @@ fi
 
 AC_SUBST([VALGRIND_FRIENDLY])
 
+dnl Enable Audacious library
+dnl =========================
+
+AC_ARG_ENABLE(libaudacious,
+ AS_HELP_STRING(--enable-libaudacious, [Enable Audacious library (default=disabled)]),
+ enable_libaudacious=$enableval, enable_libaudacious=no)
+
+if test $enable_libaudacious = yes ; then
+    AC_DEFINE(LIBAUDACIOUS, yes, [Define if Audacious library enabled])
+    LIBAUDACIOUS=yes
+else
+    LIBAUDACIOUS=no
+fi
+
+AC_SUBST([LIBAUDACIOUS])
+
 dnl Paths
 dnl =====
 
