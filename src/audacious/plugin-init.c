@@ -31,7 +31,9 @@
 #include "output.h"
 #include "plugin.h"
 #include "plugins.h"
+#ifdef USE_GTK
 #include "ui_preferences.h"
+#endif
 #include "visualization.h"
 
 static const struct {

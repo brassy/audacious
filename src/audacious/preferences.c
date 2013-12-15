@@ -20,7 +20,11 @@
 #include "preferences.h"
 
 #include <string.h>
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib.h>
+#endif
 
 #include "i18n.h"
 #include "misc.h"

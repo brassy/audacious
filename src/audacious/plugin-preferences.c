@@ -18,18 +18,27 @@
  */
 
 #include <libaudcore/audstrings.h>
+#ifdef USE_GTK
 #include <libaudgui/libaudgui-gtk.h>
+#endif
 
 #include "i18n.h"
 #include "misc.h"
 #include "plugin.h"
 #include "plugins.h"
 #include "preferences.h"
+#ifdef USE_GTK
 #include "ui_preferences.h"
+#endif
 
 typedef struct {
+#ifdef USE_GTK
     GtkWidget * about_window;
     GtkWidget * config_window;
+#else
+    void * about_window;
+    void * config_window;
+#endif
 } PluginMiscData;
 
 void plugin_make_about_window (PluginHandle * plugin)
@@ -39,7 +48,9 @@ void plugin_make_about_window (PluginHandle * plugin)
 
     if (misc->about_window)
     {
+#ifdef USE_GTK
         gtk_window_present ((GtkWindow *) misc->about_window);
+#endif
         return;
     }
 
@@ -52,10 +63,13 @@ void plugin_make_about_window (PluginHandle * plugin)
         text = dgettext (header->domain, text);
     }
 
+#ifdef USE_GTK
     SCONCAT2 (title, _("About "), name);
     audgui_simple_message (& misc->about_window, GTK_MESSAGE_INFO, title, text);
+#endif
 }
 
+#ifdef USE_GTK
 static void response_cb (GtkWidget * window, int response, const PluginPreferences * p)
 {
     if (response == GTK_RESPONSE_OK && p->apply)
@@ -69,9 +83,11 @@ static void destroy_cb (GtkWidget * window, const PluginPreferences * p)
     if (p->cleanup)
         p->cleanup ();
 }
+#endif
 
 void plugin_make_config_window (PluginHandle * plugin)
 {
+#ifdef USE_GTK
     PluginMiscData * misc = plugin_get_misc_data (plugin, sizeof (PluginMiscData));
     Plugin * header = plugin_get_header (plugin);
     const PluginPreferences * p = header->prefs;
@@ -119,14 +135,17 @@ void plugin_make_config_window (PluginHandle * plugin)
     g_signal_connect (window, "destroy", (GCallback) gtk_widget_destroyed, & misc->config_window);
 
     gtk_widget_show_all (window);
+#endif
 }
 
 void plugin_misc_cleanup (PluginHandle * plugin)
 {
+#ifdef USE_GTK
     PluginMiscData * misc = plugin_get_misc_data (plugin, sizeof (PluginMiscData));
 
     if (misc->about_window)
         gtk_widget_destroy (misc->about_window);
     if (misc->config_window)
         gtk_widget_destroy (misc->config_window);
+#endif
 }

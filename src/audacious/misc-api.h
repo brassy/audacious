@@ -101,6 +101,7 @@ AUD_FUNC3 (bool_t, file_write_tuple, const char *, filename, PluginHandle *,
 AUD_FUNC2 (bool_t, custom_infowin, const char *, filename, PluginHandle *,
  decoder)
 
+#ifdef USE_GTK
 /* ui_plugin_menu.c */
 AUD_FUNC1 (/* GtkWidget * */ void *, get_plugin_menu, int, id)
 AUD_VFUNC4 (plugin_menu_add, int, id, MenuFunc, func, const char *, name,
@@ -111,6 +112,7 @@ AUD_VFUNC2 (plugin_menu_remove, int, id, MenuFunc, func)
 AUD_VFUNC4 (create_widgets_with_domain, /* GtkWidget * */ void *, box,
  const PreferencesWidget *, widgets, int, n_widgets, const char *, domain)
 AUD_VFUNC0 (show_prefs_window)
+#endif
 
 /* util.c */
 

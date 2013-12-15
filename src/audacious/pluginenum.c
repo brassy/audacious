@@ -26,7 +26,9 @@
 #include <sys/stat.h>
 
 #include <libaudcore/audstrings.h>
+#ifdef USE_GTK
 #include <libaudgui/init.h>
+#endif
 
 #include "debug.h"
 #include "plugin.h"
@@ -178,7 +180,9 @@ void plugin_system_init(void)
 {
     assert (g_module_supported ());
 
+#ifdef USE_GTK
     audgui_init (& api_table, _AUD_PLUGIN_VERSION);
+#endif
 
     plugin_registry_load ();
 
@@ -204,5 +208,7 @@ void plugin_system_cleanup(void)
     g_list_free (loaded_modules);
     loaded_modules = NULL;
 
+#ifdef USE_GTK
     audgui_cleanup ();
+#endif
 }

@@ -22,7 +22,11 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include <gtk/gtk.h>
+#ifdef USE_GTK
+    #include <gtk/gtk.h>
+#else
+    #include <glib.h>
+#endif
 
 #include <libaudcore/audstrings.h>
 #include <libaudcore/hook.h>
@@ -63,11 +67,14 @@ static int add_source = 0;
 static int status_source = 0;
 static char status_path[512];
 static int status_count;
+#if USE_GTK
 static GtkWidget * status_window = NULL, * status_path_label,
  * status_count_label;
+#endif
 
 static bool_t status_cb (void * unused)
 {
+#ifdef USE_GTK
     if (! headless_mode () && ! status_window)
     {
         status_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -97,6 +104,7 @@ static bool_t status_cb (void * unused)
         g_signal_connect (status_window, "destroy", (GCallback)
          gtk_widget_destroyed, & status_window);
     }
+#endif
 
     pthread_mutex_lock (& mutex);
 
@@ -104,16 +112,20 @@ static bool_t status_cb (void * unused)
     snprintf (scratch, sizeof scratch, dngettext (PACKAGE, "%d file found",
      "%d files found", status_count), status_count);
 
+#ifdef USE_GTK
     if (headless_mode ())
     {
+#endif
         printf ("Searching, %s ...\r", scratch);
         fflush (stdout);
+#ifdef USE_GTK
     }
     else
     {
         gtk_label_set_text ((GtkLabel *) status_path_label, status_path);
         gtk_label_set_text ((GtkLabel *) status_count_label, scratch);
     }
+#endif
 
     pthread_mutex_unlock (& mutex);
     return TRUE;
@@ -140,10 +152,14 @@ static void status_done_locked (void)
         status_source = 0;
     }
 
+#ifdef USE_GTK
     if (headless_mode ())
         printf ("\n");
     else if (status_window)
         gtk_widget_destroy (status_window);
+#else
+    printf ("\n");
+#endif
 }
 
 static AddTask * add_task_new (int playlist_id, int at, bool_t play,

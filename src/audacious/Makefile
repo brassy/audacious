@@ -1,25 +1,27 @@
 include ../../extra.mk
 
 PROG = audacious${PROG_SUFFIX}
+
+ifeq ($(USE_GTK),yes)
 SRCS = adder.c \
        art.c \
-       chardet.c								\
+       chardet.c \
        config.c \
        drct.c \
-       effect.c									\
-       equalizer.c								\
-       equalizer_preset.c						\
-       fft.c									\
+       effect.c \
+       equalizer.c \
+       equalizer_preset.c \
+       fft.c \
        general.c \
        history.c \
-       interface.c								\
-       main.c									\
-       output.c									\
-       playback.c								\
+       interface.c \
+       main.c \
+       output.c \
+       playback.c \
        playlist-files.c \
        playlist-new.c \
        playlist-utils.c \
-       pluginenum.c								\
+       pluginenum.c \
        plugin-preferences.c \
        plugin-registry.c \
        plugin-init.c \
@@ -28,13 +30,45 @@ SRCS = adder.c \
        probe.c \
        probe-buffer.c \
        scanner.c \
-       signals.c								\
+       signals.c \
        ui_plugin_menu.c \
-       ui_preferences.c							\
-       util.c									\
+       ui_preferences.c \
+       util.c \
        vis_runner.c \
-       visualization.c							\
+       visualization.c \
        ui_albumart.c
+else
+SRCS = adder.c \
+       art.c \
+       chardet.c \
+       config.c \
+       drct.c \
+       effect.c \
+       equalizer.c \
+       equalizer_preset.c \
+       fft.c \
+       general.c \
+       history.c \
+       interface.c \
+       main.c \
+       output.c \
+       playback.c \
+       playlist-files.c \
+       playlist-new.c \
+       playlist-utils.c \
+       pluginenum.c \
+       plugin-preferences.c \
+       plugin-registry.c \
+       plugin-init.c \
+       probe.c \
+       probe-buffer.c \
+       scanner.c \
+       signals.c \
+       util.c \
+       vis_runner.c \
+       visualization.c \
+       ui_albumart.c
+endif
 
 ifeq ($(HAVE_MSWINDOWS),yes)
 SRCS += audacious.rc
@@ -48,7 +82,7 @@ INCLUDES = api.h \
            debug.h \
            drct.h \
            drct-api.h \
-           i18n.h				\
+           i18n.h \
            input.h \
            input-api.h \
            misc.h \
@@ -58,15 +92,15 @@ INCLUDES = api.h \
            plugin.h				\
            plugins.h \
            plugins-api.h \
-           preferences.h		\
+           preferences.h \
            types.h
 
-DATA = images/about-logo.png				\
+DATA = images/about-logo.png \
        images/album.png \
-       images/audio.png						\
-       images/connectivity.png				\
+       images/audio.png \
+       images/connectivity.png \
        images/info.png \
-       images/playlist.png					\
+       images/playlist.png \
        images/plugins.png
 
 CLEAN = build_stamp.c
@@ -85,10 +119,10 @@ endif
 
 CPPFLAGS := -I.. -I../.. \
             ${CPPFLAGS} \
-		${GLIB_CFLAGS}			\
-		${GMODULE_CFLAGS} \
-		${GTK_CFLAGS}			\
-		${LIBGUESS_CFLAGS}
+            ${GLIB_CFLAGS} \
+            ${GMODULE_CFLAGS} \
+            ${GTK_CFLAGS} \
+            ${LIBGUESS_CFLAGS}
 
 CPPFLAGS := ${CPPFLAGS} \
             -D_AUDACIOUS_CORE \
@@ -100,13 +134,16 @@ CPPFLAGS := ${CPPFLAGS} \
             -DHARDCODE_ICONFILE=\"${datarootdir}/pixmaps/audacious.png\"
 
 LIBS := -L../libaudcore -laudcore \
-        -L../libaudgui -laudgui \
         -L../libaudtag -laudtag \
         ${LIBS} -lm \
-		${LIBINTL}						\
-		${GLIB_LIBS}					\
-		${GMODULE_LIBS} \
-		${GTK_LIBS}
+        ${LIBINTL} \
+        ${GLIB_LIBS} \
+        ${GMODULE_LIBS} \
+        ${GTK_LIBS}
+
+ifeq ($(USE_GTK),yes)
+LIBS := -L../libaudgui -laudgui
+endif
 
 desktop_DATA = audacious.desktop
 desktopdir = ${datarootdir}/applications
