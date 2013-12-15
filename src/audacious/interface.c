@@ -17,11 +17,17 @@
  * the use of this software.
  */
 
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib.h>
+#endif
 #include <pthread.h>
 
 #include <libaudcore/hook.h>
+#ifdef USE_GTK
 #include <libaudgui/libaudgui-gtk.h>
+#endif
 
 #include "debug.h"
 #include "general.h"
@@ -37,7 +43,9 @@ static IfacePlugin * current_interface = NULL;
 static pthread_mutex_t error_mutex = PTHREAD_MUTEX_INITIALIZER;
 static GQueue error_queue = G_QUEUE_INIT;
 static int error_source;
+#ifdef USE_GTK
 static GtkWidget * error_win;
+#endif
 
 bool_t interface_load (PluginHandle * plugin)
 {
@@ -87,10 +95,14 @@ static bool_t error_idle_func (void * unused)
     {
         pthread_mutex_unlock (& error_mutex);
 
+#ifdef USE_GTK
         if (headless_mode ())
             fprintf (stderr, "ERROR: %s\n", message);
         else
             audgui_simple_message (& error_win, GTK_MESSAGE_ERROR, _("Error"), message);
+#else
+        fprintf (stderr, "ERROR: %s\n", message);
+#endif
 
         str_unref (message);
 
@@ -115,13 +127,16 @@ void interface_show_error (const char * message)
     pthread_mutex_unlock (& error_mutex);
 }
 
+#ifdef USE_GTK
 static bool_t delete_cb (GtkWidget * window, GdkEvent * event, PluginHandle *
  plugin)
 {
     plugin_enable (plugin, FALSE);
     return TRUE;
 }
+#endif
 
+#ifdef USE_GTK
 void interface_add_plugin_widget (PluginHandle * plugin, GtkWidget * widget)
 {
     g_return_if_fail (current_interface);
@@ -139,7 +154,14 @@ void interface_add_plugin_widget (PluginHandle * plugin, GtkWidget * widget)
         gtk_widget_show_all (window);
     }
 }
+#else
+void interface_add_plugin_widget (PluginHandle * plugin, void * widget)
+{
 
+}
+#endif
+
+#ifdef USE_GTK
 void interface_remove_plugin_widget (PluginHandle * plugin, GtkWidget * widget)
 {
     g_return_if_fail (current_interface);
@@ -149,6 +171,12 @@ void interface_remove_plugin_widget (PluginHandle * plugin, GtkWidget * widget)
     else
         gtk_widget_destroy (gtk_widget_get_parent (widget));
 }
+#else
+void interface_remove_plugin_widget (PluginHandle * plugin, void * widget)
+{
+
+}
+#endif
 
 static bool_t probe_cb (PluginHandle * p, PluginHandle * * pp)
 {

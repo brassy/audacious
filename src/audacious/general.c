@@ -17,19 +17,29 @@
  * the use of this software.
  */
 
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib.h>
+#endif
 
 #include "debug.h"
 #include "general.h"
 #include "interface.h"
 #include "plugin.h"
 #include "plugins.h"
+#ifdef USE_GTK
 #include "ui_preferences.h"
+#endif
 
 typedef struct {
     PluginHandle * plugin;
     GeneralPlugin * gp;
+#ifdef USE_GTK
     GtkWidget * widget;
+#else
+    void * widget;
+#endif
 } LoadedGeneral;
 
 static int running = FALSE;
@@ -62,8 +72,10 @@ static void general_load (PluginHandle * plugin)
     if (general->widget != NULL)
     {
         AUDDBG ("Adding %s to interface.\n", plugin_get_name (plugin));
+#ifdef USE_GTK
         g_signal_connect (general->widget, "destroy", (GCallback)
          gtk_widget_destroyed, & general->widget);
+#endif
         interface_add_plugin_widget (plugin, general->widget);
     }
 

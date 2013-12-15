@@ -18,7 +18,11 @@
  */
 
 #include <glib.h>
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib-object.h>
+#endif
 #include <string.h>
 
 #include "debug.h"
@@ -27,7 +31,9 @@
 #include "misc.h"
 #include "plugin.h"
 #include "plugins.h"
+#ifdef USE_GTK
 #include "ui_preferences.h"
+#endif
 #include "visualization.h"
 #include "vis_runner.h"
 
@@ -36,7 +42,11 @@ static GList * vis_funcs[AUD_VIS_TYPES];
 typedef struct {
     PluginHandle * plugin;
     VisPlugin * header;
+#ifdef USE_GTK
     GtkWidget * widget;
+#else
+    void * widget;
+#endif
 } LoadedVis;
 
 static int running = FALSE;
@@ -145,8 +155,10 @@ static void vis_load (PluginHandle * plugin)
     if (vis->widget != NULL)
     {
         AUDDBG ("Adding %s to interface.\n", plugin_get_name (plugin));
+#ifdef USE_GTK
         g_signal_connect (vis->widget, "destroy", (GCallback)
          gtk_widget_destroyed, & vis->widget);
+#endif
         interface_add_plugin_widget (plugin, vis->widget);
     }
 

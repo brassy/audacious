@@ -25,11 +25,17 @@
 #include <unistd.h>
 #include <locale.h>
 
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib.h>
+#endif
 
 #include <libaudcore/audstrings.h>
 #include <libaudcore/hook.h>
+#ifdef USE_GTK
 #include <libaudgui/libaudgui.h>
+#endif
 #include <libaudtag/audtag.h>
 
 #ifdef USE_DBUS
@@ -49,6 +55,10 @@
 #include "util.h"
 
 #define AUTOSAVE_INTERVAL 300 /* seconds */
+
+#ifndef USE_GTK
+static GMainLoop * main_loop = NULL;
+#endif
 
 static struct {
     bool_t help, version;
@@ -220,6 +230,17 @@ const char * get_path (int id)
 static bool_t parse_options (int argc, char * * argv)
 {
     char * cur = g_get_current_dir ();
+    GOptionContext *context;
+    GError *error = NULL;
+
+    memset (& options, 0, sizeof options);
+    options.session = -1;
+
+    context = g_option_context_new(_("- play multimedia files"));
+    g_option_context_add_main_entries(context, cmd_entries, PACKAGE);
+#ifdef USE_GTK
+    g_option_context_add_group(context, gtk_get_option_group(FALSE));
+#endif
 
     for (int n = 1; n < argc; n ++)
     {
@@ -434,10 +455,12 @@ static void do_commands (void)
             drct_pause ();
     }
 
+#ifdef USE_GTK
     if (options.show_jump_box && ! options.headless)
         audgui_jump_to_track ();
     if (options.mainwin && ! options.headless)
         interface_show (TRUE);
+#endif
 }
 
 static void main_cleanup (void)
@@ -476,8 +499,10 @@ static void init_one (void)
 
 static void init_two (void)
 {
+#ifdef USE_GTK
     if (! options.headless)
         gtk_init (NULL, NULL);
+#endif
 
 #ifdef HAVE_SIGWAIT
     signals_init_two ();
@@ -567,7 +592,11 @@ static bool_t check_should_quit (void)
 static void maybe_quit (void)
 {
     if (check_should_quit ())
+#ifdef USE_GTK
         gtk_main_quit ();
+#else
+        g_main_loop_quit (main_loop);
+#endif
 }
 
 int main (int argc, char * * argv)
@@ -608,7 +637,13 @@ int main (int argc, char * * argv)
     hook_associate ("playback stop", (HookFunction) maybe_quit, NULL);
     hook_associate ("playlist add complete", (HookFunction) maybe_quit, NULL);
 
+#ifdef USE_GTK
     gtk_main ();
+#else
+    main_loop = g_main_loop_new (NULL, FALSE);
+    g_main_loop_run (main_loop);
+    g_main_loop_unref (main_loop);
+#endif
 
     hook_dissociate ("playback stop", (HookFunction) maybe_quit);
     hook_dissociate ("playlist add complete", (HookFunction) maybe_quit);
@@ -620,5 +655,9 @@ QUIT:
 
 void drct_quit (void)
 {
+#ifdef USE_GTK
     gtk_main_quit ();
+#else
+    g_main_loop_quit (main_loop);
+#endif
 }

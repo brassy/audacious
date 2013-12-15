@@ -20,14 +20,23 @@
 #ifndef __AUDACIOUS2_INTERFACE_H__
 #define __AUDACIOUS2_INTERFACE_H__
 
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#else
+#include <glib.h>
+#endif
 #include <audacious/plugins.h>
 
 bool_t interface_load (PluginHandle * plugin);
 void interface_unload (void);
 
+#ifdef USE_GTK
 void interface_add_plugin_widget (PluginHandle * plugin, GtkWidget * widget);
 void interface_remove_plugin_widget (PluginHandle * plugin, GtkWidget * widget);
+#else
+void interface_add_plugin_widget (PluginHandle * plugin, void * widget);
+void interface_remove_plugin_widget (PluginHandle * plugin, void * widget);
+#endif
 
 PluginHandle * iface_plugin_probe (void);
 PluginHandle * iface_plugin_get_current (void);
