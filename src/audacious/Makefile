@@ -101,6 +101,10 @@ INCLUDES = api.h \
            preferences.h \
            types.h
 
+ifeq ($(LIBAUDACIOUS),yes)
+INCLUDES += audacious.h
+endif
+
 DATA = images/about-logo.png \
        images/album.png \
        images/audio.png \
@@ -148,7 +152,7 @@ LIBS := -L../libaudcore -laudcore \
         ${GTK_LIBS}
 
 ifeq ($(USE_GTK),yes)
-LIBS := -L../libaudgui -laudgui
+LIBS += -L../libaudgui -laudgui
 endif
 
 desktop_DATA = audacious.desktop

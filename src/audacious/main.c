@@ -53,11 +53,16 @@
 #include "plugins.h"
 #include "scanner.h"
 #include "util.h"
+#include "api.h"
 
 #define AUTOSAVE_INTERVAL 300 /* seconds */
 
 #ifndef USE_GTK
 static GMainLoop * main_loop = NULL;
+#endif
+
+#ifdef LIBAUDACIOUS
+extern AudAPITable * api_table;
 #endif
 
 static struct {
@@ -544,7 +549,7 @@ static void maybe_quit (void)
 }
 
 #ifdef LIBAUDACIOUS
-int audacious_init (int argc, char * * argv)
+EXPORT int audacious_main (int argc, char * * argv)
 #else
 int main (int argc, char * * argv)
 #endif
@@ -589,6 +594,12 @@ QUIT:
     shut_down ();
     return EXIT_SUCCESS;
 }
+
+#ifdef LIBAUDACIOUS
+EXPORT AudAPITable * audacious_init (void) {
+    return & api_table;
+}
+#endif
 
 void drct_quit (void)
 {
