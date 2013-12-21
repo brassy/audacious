@@ -62,7 +62,7 @@ static GMainLoop * main_loop = NULL;
 #endif
 
 #ifdef LIBAUDACIOUS
-extern AudAPITable * api_table;
+extern AudAPITable api_table;
 #endif
 
 static struct {
