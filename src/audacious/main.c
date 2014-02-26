@@ -230,17 +230,6 @@ const char * get_path (int id)
 static bool_t parse_options (int argc, char * * argv)
 {
     char * cur = g_get_current_dir ();
-    GOptionContext *context;
-    GError *error = NULL;
-
-    memset (& options, 0, sizeof options);
-    options.session = -1;
-
-    context = g_option_context_new(_("- play multimedia files"));
-    g_option_context_add_main_entries(context, cmd_entries, PACKAGE);
-#ifdef USE_GTK
-    g_option_context_add_group(context, gtk_get_option_group(FALSE));
-#endif
 
     for (int n = 1; n < argc; n ++)
     {
