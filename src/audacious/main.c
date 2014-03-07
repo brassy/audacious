@@ -54,6 +54,8 @@
 #include "scanner.h"
 #include "util.h"
 
+#include "core.h"
+
 #define AUTOSAVE_INTERVAL 300 /* seconds */
 
 #ifndef USE_GTK
@@ -629,9 +631,7 @@ int main (int argc, char * * argv)
 #ifdef USE_GTK
     gtk_main ();
 #else
-    main_loop = g_main_loop_new (NULL, FALSE);
-    g_main_loop_run (main_loop);
-    g_main_loop_unref (main_loop);
+    core_init (argc, argv);
 #endif
 
     hook_dissociate ("playback stop", (HookFunction) maybe_quit);

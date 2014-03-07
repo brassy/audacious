@@ -67,7 +67,12 @@ SRCS = adder.c \
        util.c \
        vis_runner.c \
        visualization.c \
-       ui_albumart.c
+       ui_albumart.c \
+       core.cc \
+       glib_thread.cc \
+       glib_thread.moc \
+       ui_main_widget.cc \
+       ui_main_widget.moc
 endif
 
 ifeq ($(HAVE_MSWINDOWS),yes)
@@ -123,7 +128,8 @@ CPPFLAGS := -I.. -I../.. \
             ${GLIB_CFLAGS} \
             ${GMODULE_CFLAGS} \
             ${GTK_CFLAGS} \
-            ${LIBGUESS_CFLAGS}
+            ${LIBGUESS_CFLAGS} \
+            -F${PREFIX}/lib -I${PREFIX}/lib/QtCore.framework/Headers -I${PREFIX}/lib/QtGui.framework/Headers -I${PREFIX}/lib/QtWidgets.framework/Headers
 
 CPPFLAGS := ${CPPFLAGS} \
             -D_AUDACIOUS_CORE \
@@ -140,7 +146,8 @@ LIBS := -L../libaudcore -laudcore \
         ${LIBINTL} \
         ${GLIB_LIBS} \
         ${GMODULE_LIBS} \
-        ${GTK_LIBS}
+        ${GTK_LIBS} \
+        -F${PREFIX}/lib -framework QtCore -framework QtGui -framework QtWidgets -lstdc++
 
 ifeq ($(USE_GTK),yes)
 LIBS := -L../libaudgui -laudgui
@@ -148,3 +155,6 @@ endif
 
 desktop_DATA = audacious.desktop
 desktopdir = ${datarootdir}/applications
+
+%.moc : %.h
+	moc -i "$<" -o "$@"
