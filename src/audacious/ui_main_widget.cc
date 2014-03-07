@@ -39,7 +39,6 @@ void UIMainWidget::openSlot() {
         Index *files = index_new();
         Q_FOREACH (QUrl url, dialog.selectedUrls()) {
             const char *tmp = url.toEncoded().constData();
-            qDebug() << "Opening:" << tmp << endl;
             index_insert(files, -1, str_get(tmp));
             g_idle_add(open_cb, files);
         }
